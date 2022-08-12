@@ -1,19 +1,23 @@
 package dev.yawkar.auxilium.bot;
 
+import dev.yawkar.auxilium.dispatcher.UpdateDispatcher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
 public class AuxiliumBot extends TelegramLongPollingBot {
 
+    private final UpdateDispatcher updateDispatcher;
     @Value("${telegram.bot.username}")
     private String botUsername;
     @Value("${telegram.bot.token}")
     private String botToken;
+
+    public AuxiliumBot(UpdateDispatcher updateDispatcher) {
+        this.updateDispatcher = updateDispatcher;
+    }
 
     @Override
     public String getBotUsername() {
@@ -27,15 +31,6 @@ public class AuxiliumBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            SendMessage response = new SendMessage();
-            response.setChatId(update.getMessage().getChatId());
-            response.setText(update.getMessage().getText());
-            try {
-                execute(response);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
-        }
+        updateDispatcher.dispatch(update);
     }
 }
