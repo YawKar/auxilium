@@ -1,0 +1,22 @@
+version: '2'
+
+services:
+  bot:
+    container_name: telegram_bot
+    build:
+      dockerfile: Dockerfile
+      context: .
+    depends_on:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql_db:5432/auxilium_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=toor
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=create
+  postgres:
+    container_name: postgresql_db
+    image: postgres
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=toor
+      - POSTGRES_DB=auxilium_db
