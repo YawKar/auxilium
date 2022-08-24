@@ -15,7 +15,7 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=create
   postgres:
     container_name: postgresql_db
-    image: postgres
+    image: postgres:14-alpine
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=toor

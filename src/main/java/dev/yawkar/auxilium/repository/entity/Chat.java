@@ -1,6 +1,6 @@
 package dev.yawkar.auxilium.repository.entity;
 
-import dev.yawkar.auxilium.repository.ChatStage;
+import dev.yawkar.auxilium.context.ContextType;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -16,5 +16,5 @@ public class Chat {
 
     @Id
     private long id;
-    private ChatStage stage;
+    private ContextType contextType;
 }
