@@ -14,23 +14,27 @@ public class AlphaDispatcher extends AbstractDispatcher {
     private final UserContext passiveContext;
     private final UserContext findingContext;
     private final UserContext activeContext;
+    private final UserContext newChatContext;
 
     public AlphaDispatcher(
             ChatService chatService,
             @Qualifier("passiveContext") UserContext passiveContext,
             @Qualifier("findingHelpMateContext") UserContext findingContext,
-            @Qualifier("activeContext") UserContext activeContext
+            @Qualifier("activeContext") UserContext activeContext,
+            @Qualifier("newChatContext") UserContext newChatContext
     ) {
         this.chatService = chatService;
         this.passiveContext = passiveContext;
         this.findingContext = findingContext;
         this.activeContext = activeContext;
+        this.newChatContext = newChatContext;
     }
 
     @Override
     public void dispatch(Update update) {
         ContextType contextType = chatService.getContextType(update.getMessage().getChatId());
         switch (contextType) {
+            case NEW -> newChatContext.handle(update);
             case PASSIVE -> passiveContext.handle(update);
             case FINDING_HELP_MATE -> findingContext.handle(update);
             case ACTIVE -> activeContext.handle(update);

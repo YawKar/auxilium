@@ -2,6 +2,7 @@ package dev.yawkar.auxilium.service;
 
 import dev.yawkar.auxilium.context.ContextType;
 import dev.yawkar.auxilium.repository.ChatRepository;
+import dev.yawkar.auxilium.repository.entity.Chat;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,7 +14,17 @@ public class ChatService {
         this.chatRepository = chatRepository;
     }
 
+    private void registerNewChat(long chatId) {
+        Chat chat = new Chat()
+                .setId(chatId)
+                .setContextType(ContextType.NEW);
+        chatRepository.save(chat);
+    }
+
     public ContextType getContextType(long chatId) {
+        if (!chatRepository.existsById(chatId)) {
+            registerNewChat(chatId);
+        }
         return chatRepository.findById(chatId).get().getContextType();
     }
 }
