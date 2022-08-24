@@ -27,4 +27,12 @@ public class ChatService {
         }
         return chatRepository.findById(chatId).get().getContextType();
     }
+
+    public Chat getChatById(long chatId) {
+        return chatRepository.findById(chatId).get();
+    }
+
+    public void updateChat(Chat chat) {
+        chatRepository.save(chat);
+    }
 }
