@@ -1,6 +1,7 @@
 package dev.yawkar.auxilium.context;
 
 import dev.yawkar.auxilium.bot.AuxiliumBot;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -9,7 +10,7 @@ public class PassiveContext extends AbstractContext {
 
     private final AuxiliumBot bot;
 
-    public PassiveContext(AuxiliumBot bot) {
+    public PassiveContext(@Lazy AuxiliumBot bot) {
         this.bot = bot;
     }
 
