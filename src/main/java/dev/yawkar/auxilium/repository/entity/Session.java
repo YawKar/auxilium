@@ -6,14 +6,16 @@ import lombok.experimental.Accessors;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "dialogs")
+@Table(name = "sessions")
 @Data
 @Accessors(chain = true)
-public class Dialog {
+public class Session {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private long chat1Id;
-    private long chat2Id;
+    @Column(name = "requester_id")
+    private long requesterId;
+    @Column(name = "helper_id")
+    private long helperId;
 }
