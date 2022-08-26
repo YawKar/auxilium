@@ -5,6 +5,8 @@ import dev.yawkar.auxilium.repository.ChatRepository;
 import dev.yawkar.auxilium.repository.entity.Chat;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ChatService {
 
@@ -34,5 +36,9 @@ public class ChatService {
 
     public void updateChat(Chat chat) {
         chatRepository.save(chat);
+    }
+
+    public List<Chat> getAllFreeHelpers() {
+        return chatRepository.findAllByContextTypeAndReadyToHelp(ContextType.PASSIVE, true);
     }
 }
