@@ -2,6 +2,8 @@ package dev.yawkar.auxilium.context;
 
 import dev.yawkar.auxilium.bot.AuxiliumBot;
 import dev.yawkar.auxilium.exception.context.UnknownCommandException;
+import dev.yawkar.auxilium.repository.entity.Chat;
+import dev.yawkar.auxilium.service.ChatService;
 import dev.yawkar.auxilium.service.ParserUtils;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,11 +18,13 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class PassiveContext extends AbstractContext {
 
     private final AuxiliumBot bot;
+    private final ChatService chatService;
     @Value("${passiveContext.commands}")
     private String availableCommandsResponse;
 
-    public PassiveContext(@Lazy AuxiliumBot bot) {
+    public PassiveContext(@Lazy AuxiliumBot bot, ChatService chatService) {
         this.bot = bot;
+        this.chatService = chatService;
     }
 
     @SneakyThrows
@@ -40,19 +44,28 @@ public class PassiveContext extends AbstractContext {
 
     @SneakyThrows
     private void runClose(Update update) {
-        // TODO: rewrite
-        bot.execute(new SendMessage(update.getMessage().getChatId().toString(), "close command"));
+        Chat chat = chatService.getChatById(update.getMessage().getChatId());
+        chat.setReadyToHelp(false);
+        chatService.updateChat(chat);
+        bot.execute(new SendMessage(update.getMessage().getChatId().toString(),
+                "You've removed from the list of helpers"));
     }
 
     @SneakyThrows
     private void runOpen(Update update) {
-        // TODO: rewrite
-        bot.execute(new SendMessage(update.getMessage().getChatId().toString(), "open command"));
+        Chat chat = chatService.getChatById(update.getMessage().getChatId());
+        chat.setReadyToHelp(true);
+        chatService.updateChat(chat);
+        bot.execute(new SendMessage(update.getMessage().getChatId().toString(),
+                "You've registered as a helper! Thank you!"));
     }
 
     @SneakyThrows
     private void runNeedHelp(Update update) {
-        // TODO: rewrite
-        bot.execute(new SendMessage(update.getMessage().getChatId().toString(), "need_help command"));
+        Chat chat = chatService.getChatById(update.getMessage().getChatId());
+        chat.setContextType(ContextType.FINDING_HELP_MATE);
+        chatService.updateChat(chat);
+        bot.execute(new SendMessage(update.getMessage().getChatId().toString(),
+                "The finding helpmate process was started! You will be connected to the first freed helper!"));
     }
 }
