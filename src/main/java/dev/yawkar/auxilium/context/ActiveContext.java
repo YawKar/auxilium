@@ -61,6 +61,16 @@ public class ActiveContext extends AbstractContext {
         Chat chat = chatService.getChatById(update.getMessage().getChatId());
         chat.setContextType(ContextType.PASSIVE);
         chatService.updateChat(chat);
+
+        Session session = sessionService.getSessionById(chat.getSessionId());
+
+        long interlocutorId = chat.getId() == session.getHelperId() ? session.getRequesterId() : session.getHelperId();
+        Chat interlocutorChat = chatService.getChatById(interlocutorId);
+        interlocutorChat.setContextType(ContextType.PASSIVE);
+        chatService.updateChat(interlocutorChat);
+
+        sessionService.deleteSessionById(chat.getSessionId());
+
         bot.execute(new SendMessage(update.getMessage().getChatId().toString(), availableCommandsResponse));
     }
 }

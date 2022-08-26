@@ -4,6 +4,7 @@ import dev.yawkar.auxilium.bot.AuxiliumBot;
 import dev.yawkar.auxilium.exception.context.UnknownCommandException;
 import dev.yawkar.auxilium.repository.entity.Chat;
 import dev.yawkar.auxilium.service.ChatService;
+import dev.yawkar.auxilium.service.FindingSessionQueueService;
 import dev.yawkar.auxilium.service.ParserUtils;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,12 +20,17 @@ public class PassiveContext extends AbstractContext {
 
     private final AuxiliumBot bot;
     private final ChatService chatService;
+    private final FindingSessionQueueService findingSessionQueueService;
     @Value("${passiveContext.commands}")
     private String availableCommandsResponse;
 
-    public PassiveContext(@Lazy AuxiliumBot bot, ChatService chatService) {
+    public PassiveContext(
+            @Lazy AuxiliumBot bot,
+            ChatService chatService,
+            FindingSessionQueueService findingSessionQueueService) {
         this.bot = bot;
         this.chatService = chatService;
+        this.findingSessionQueueService = findingSessionQueueService;
     }
 
     @SneakyThrows
@@ -67,5 +73,6 @@ public class PassiveContext extends AbstractContext {
         chatService.updateChat(chat);
         bot.execute(new SendMessage(update.getMessage().getChatId().toString(),
                 "The finding helpmate process was started! You will be connected to the first freed helper!"));
+        findingSessionQueueService.addNewRequesterChatId(chat.getId());
     }
 }

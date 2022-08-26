@@ -20,4 +20,8 @@ public class SessionService {
     public Session updateOrSaveSession(Session session) {
         return sessionRepository.save(session);
     }
+
+    public void deleteSessionById(long sessionId) {
+        sessionRepository.deleteById(sessionId);
+    }
 }
