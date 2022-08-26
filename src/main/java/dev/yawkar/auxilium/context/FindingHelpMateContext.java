@@ -2,6 +2,9 @@ package dev.yawkar.auxilium.context;
 
 import dev.yawkar.auxilium.bot.AuxiliumBot;
 import dev.yawkar.auxilium.exception.context.UnknownCommandException;
+import dev.yawkar.auxilium.repository.entity.Chat;
+import dev.yawkar.auxilium.service.ChatService;
+import dev.yawkar.auxilium.service.FindingSessionQueueService;
 import dev.yawkar.auxilium.service.ParserUtils;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,11 +19,18 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class FindingHelpMateContext extends AbstractContext {
 
     private final AuxiliumBot bot;
+    private final ChatService chatService;
+    private final FindingSessionQueueService findingSessionQueueService;
     @Value("${findingHelpMateContext.commands}")
     private String availableCommandsResponse;
 
-    public FindingHelpMateContext(@Lazy AuxiliumBot bot) {
+    public FindingHelpMateContext(
+            @Lazy AuxiliumBot bot,
+            ChatService chatService,
+            FindingSessionQueueService findingSessionQueueService) {
         this.bot = bot;
+        this.chatService = chatService;
+        this.findingSessionQueueService = findingSessionQueueService;
     }
 
     @SneakyThrows
@@ -38,6 +48,10 @@ public class FindingHelpMateContext extends AbstractContext {
 
     @SneakyThrows
     private void runStopHelp(Update update) {
-        bot.execute(new SendMessage(update.getMessage().getChatId().toString(), "stop_help"));
+        Chat chat = chatService.getChatById(update.getMessage().getChatId());
+        chat.setContextType(ContextType.PASSIVE);
+        chatService.updateChat(chat);
+        findingSessionQueueService.removeRequesterChatId(chat.getId());
+        bot.execute(new SendMessage(update.getMessage().getChatId().toString(), "Stopped finding process"));
     }
 }
