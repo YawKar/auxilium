@@ -31,7 +31,7 @@ public class FindingSessionQueueService {
         tryToProcess();
     }
 
-    public void tryToProcess() {
+    public synchronized void tryToProcess() {
         if (chatIdsWaitForHelp.isEmpty())
             return;
         List<Chat> helpers = chatService.getAllFreeHelpers();

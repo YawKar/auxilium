@@ -64,6 +64,7 @@ public class PassiveContext extends AbstractContext {
         chatService.updateChat(chat);
         bot.execute(new SendMessage(update.getMessage().getChatId().toString(),
                 "You've registered as a helper! Thank you!"));
+        findingSessionQueueService.tryToProcess();
     }
 
     @SneakyThrows
