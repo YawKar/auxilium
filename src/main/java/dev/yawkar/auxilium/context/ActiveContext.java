@@ -53,7 +53,7 @@ public class ActiveContext extends AbstractContext {
         Chat chat = chatService.getChatById(update.getMessage().getChatId());
         Session session = sessionService.getSessionById(chat.getSessionId());
         long interlocutorId = chat.getId() == session.getHelperId() ? session.getRequesterId() : session.getHelperId();
-        bot.execute(new SendMessage(Long.toString(interlocutorId), update.getMessage().getText()));
+        bot.execute(new SendMessage(Long.toString(interlocutorId), "[Mate]:\n%s".formatted(update.getMessage().getText())));
     }
 
     @SneakyThrows
@@ -71,6 +71,7 @@ public class ActiveContext extends AbstractContext {
 
         sessionService.deleteSessionById(chat.getSessionId());
 
-        bot.execute(new SendMessage(update.getMessage().getChatId().toString(), availableCommandsResponse));
+        bot.execute(new SendMessage(Long.toString(chat.getId()), "Session ended!"));
+        bot.execute(new SendMessage(Long.toString(interlocutorChat.getId()), "Session ended!"));
     }
 }
