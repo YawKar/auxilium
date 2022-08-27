@@ -4,8 +4,10 @@ import dev.yawkar.auxilium.bot.AuxiliumBot;
 import dev.yawkar.auxilium.context.ContextType;
 import dev.yawkar.auxilium.repository.entity.Chat;
 import dev.yawkar.auxilium.repository.entity.Session;
+import lombok.SneakyThrows;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import java.util.*;
 
@@ -31,7 +33,7 @@ public class FindingSessionQueueService {
         tryToProcess();
     }
 
-    public void tryToProcess() {
+    public synchronized void tryToProcess() {
         if (chatIdsWaitForHelp.isEmpty())
             return;
         List<Chat> helpers = chatService.getAllFreeHelpers();
@@ -50,8 +52,15 @@ public class FindingSessionQueueService {
             helperChat.setContextType(ContextType.ACTIVE);
             chatService.updateChat(requesterChat);
             chatService.updateChat(helperChat);
+            sendNotificationAboutConnectingToSession(requesterChat);
+            sendNotificationAboutConnectingToSession(helperChat);
             ++currentHelperIndex;
         }
+    }
+
+    @SneakyThrows
+    private void sendNotificationAboutConnectingToSession(Chat chat) {
+        bot.execute(new SendMessage(Long.toString(chat.getId()), "You are now connected to the session: %d!\nAll your messages will be redirected to the other person!".formatted(chat.getSessionId())));
     }
 
     public void removeRequesterChatId(long requesterId) {
