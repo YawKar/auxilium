@@ -13,7 +13,6 @@ Anonymous p2p mutual assistance service inside the telegram bot
 
 ## How to run
 ```bash
-chmod +x mvnw                     # allow executing maven wrapper
 ./mvnw clean                      # clean /target (if it's not the first run)
 ./mvnw package -Dmaven.test.skip  # build .jar (and skip testing)
 docker compose up                 # run composition
