@@ -55,6 +55,7 @@ public class FindingSessionQueueService {
             sendNotificationAboutConnectingToSession(requesterChat);
             sendNotificationAboutConnectingToSession(helperChat);
             ++currentHelperIndex;
+            iter.remove();
         }
     }
 
